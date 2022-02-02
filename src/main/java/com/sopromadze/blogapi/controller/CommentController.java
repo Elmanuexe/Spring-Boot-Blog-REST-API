@@ -45,11 +45,11 @@ public class CommentController {
 
 	@PostMapping
 	@PreAuthorize("hasRole('USER')")
-	public Comment addComment(@Valid @RequestBody CommentRequest commentRequest,
+	public ResponseEntity<Comment> addComment(@Valid @RequestBody CommentRequest commentRequest,
 			@PathVariable(name = "postId") Long postId, @CurrentUser UserPrincipal currentUser) {
 		Comment newComment = commentService.addComment(commentRequest, postId, currentUser);
 
-		return newComment;
+		return ResponseEntity.status(HttpStatus.CREATED).body(newComment);
 	}
 
 	@GetMapping("/{id}")

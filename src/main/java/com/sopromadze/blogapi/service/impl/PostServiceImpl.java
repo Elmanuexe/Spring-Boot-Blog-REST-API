@@ -21,7 +21,10 @@ import com.sopromadze.blogapi.service.PostService;
 
 import com.sopromadze.blogapi.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
+<<<<<<< HEAD
+=======
 
+>>>>>>> origin/master
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -86,7 +89,7 @@ public class PostServiceImpl implements PostService {
 				.orElseThrow(() -> new ResourceNotFoundException(CATEGORY, ID, id));
 
 		Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, CREATED_AT);
-		Page<Post> posts = postRepository.findByCategory(category.getId(), pageable);
+		Page<Post> posts = postRepository.findByCategoryId(category.getId(), pageable);
 
 		List<Post> content = posts.getNumberOfElements() == 0 ? Collections.emptyList() : posts.getContent();
 
