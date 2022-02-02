@@ -21,10 +21,7 @@ import com.sopromadze.blogapi.service.PostService;
 
 import com.sopromadze.blogapi.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/master
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

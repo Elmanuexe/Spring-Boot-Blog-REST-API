@@ -91,7 +91,7 @@ class PostServiceImplTest {
     void getPostsByCategory_Success (){
 
         lenient().when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(category));
-        lenient().when(postRepository.findByCategory(anyLong(),any(Pageable.class))).thenReturn(page);
+        lenient().when(postRepository.findByCategoryId(anyLong(),any(Pageable.class))).thenReturn(page);
 
         assertNotNull(postService.getPostsByCategory(ONE_ID, ONE, ONE));
         assertEquals(1,postService.getPostsByCategory(ONE_ID, ONE, ONE).getContent().size());
