@@ -37,7 +37,7 @@ class TodoRepositoryTest {
     }
 
     @Test
-    void findByCreatedBy() {
+    void findByCreatedBy_Success() {
         testEntityManager.persist(user);
         assertNotNull(todoRepository.findByCreatedBy(user.getId(), PageRequest.of(1, 1, Sort.Direction.DESC,"createdAt")));
     }

@@ -54,7 +54,7 @@ class CommentServiceImplTest {
 
     @Test
         //Dato de entrada Long id Post, dato de salida PagedResponse con los comentarios
-    void getAllComments() {
+    void getAllComments_Success() {
         Pageable pageable = getPageable();
         when(commentRepository.findByPostId(POST_ID,pageable)).thenReturn(getComments());
 
@@ -84,7 +84,7 @@ class CommentServiceImplTest {
 
     @Test
     //Dato de entrada Commentario, dato de salida comentario guardado
-    void addComment() {
+    void addComment_Success() {
         when(postRepository.findById(POST_ID)).thenReturn(Optional.of(getPost()));
         when(userRepository.getUser(getUserPrincipal())).thenReturn(getUser());
         Comment commentSave = getCommentEntity();
@@ -97,7 +97,7 @@ class CommentServiceImplTest {
 
     @Test
     //Dato de entrada Id de un post que no existe, dato de salida ResourceNotFoundException
-    void addtCommentPostException(){
+    void addtComment_NotFound(){
         when(postRepository.findById(POST_ID)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, ()-> commentService.addComment(getCommentRequest(), POST_ID, getUserPrincipal()));
@@ -105,7 +105,7 @@ class CommentServiceImplTest {
 
     @Test
     //Dato de entrada id del post y el id del comentario, dato de salida el comentario
-    void getComment() {
+    void getComment_Success() {
         when(postRepository.findById(POST_ID)).thenReturn(Optional.of(getPost()));
         when(commentRepository.findById(COMMENT_ID)).thenReturn(Optional.of(getCommentEntity()));
 
@@ -115,7 +115,7 @@ class CommentServiceImplTest {
 
     @Test
     //Dato de entrada id de un post que no existe, dato de salida ResourceNotFoundException
-    void getCommentPostException(){
+    void getComment_NotFound(){
         when(postRepository.findById(POST_ID)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, ()-> commentService.getComment(POST_ID, COMMENT_ID));
@@ -123,7 +123,7 @@ class CommentServiceImplTest {
 
     @Test
     //Dato de entrada id de post, id de un comentario que no existe, dato de salida ResourceNotFoundException
-    void getCommentCommentException(){
+    void getComment_NotFoundComment(){
         when(commentRepository.findById(COMMENT_ID)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> commentService.getComment(POST_ID,COMMENT_ID));
@@ -131,7 +131,7 @@ class CommentServiceImplTest {
 
     @Test
     //Dato de entrada id del post diferente a la id del post del comentario, dato de salida BlogapiException
-    void getCommentExceptionId(){
+    void getComment_BlogApi(){
         getCommentEntity().getPost().setId(777L);
         when(postRepository.findById(POST_ID)).thenReturn(Optional.of(getPost()));
         getCommentEntity().getPost().setId(78L);
@@ -141,7 +141,7 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void updateComment() {
+    void updateComment_Success() {
         when(postRepository.findById(POST_ID)).thenReturn(Optional.of(getPost()));
         when(commentRepository.findById(COMMENT_ID)).thenReturn(Optional.of(getCommentEntity()));
         when(commentRepository.save(getCommentEntity())).thenReturn(getCommentEntity());
@@ -152,7 +152,7 @@ class CommentServiceImplTest {
 
    @Test
    //Dato de entrada id del usuario diferente a la id del usuario logeado, dato de salida BlogapiException
-    void updateCommentExceptionRole(){
+    void updateComment_NotPermission(){
         when(postRepository.findById(POST_ID)).thenReturn(Optional.of(getPost()));
         when(commentRepository.findById(COMMENT_ID)).thenReturn(Optional.of(getCommentEntity()));
         getCommentEntity().getUser().setId(98L);
@@ -163,7 +163,7 @@ class CommentServiceImplTest {
 
     @Test
     //Dato de entrada id del post diferente a la id por parámetro, datos de salida BlogapiException
-    void updateCommentExceptionPostId(){
+    void updateComment_BadRequest(){
         when(postRepository.findById(POST_ID)).thenReturn(Optional.of(getPost()));
         when(commentRepository.findById(COMMENT_ID)).thenReturn(Optional.of(getCommentEntity()));
         getPost().setId(4586L);
@@ -174,7 +174,7 @@ class CommentServiceImplTest {
 
     @Test()
     //Dato de entrada id de un post que no existe, datos de salida ResourceNotFoundException
-    void updateCommentExceptionPost(){
+    void updateComment_NotFound(){
         when(postRepository.findById(POST_ID)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> commentService.updateComment(POST_ID, COMMENT_ID, getCommentRequest(), getUserPrincipal()),
@@ -183,7 +183,7 @@ class CommentServiceImplTest {
 
     @Test()
     //Dato de entrada id de un comentario que no existe, datos de salida ResourceNotFoundException
-    void updateCommentExceptionComment(){
+    void updateComment_NotFoundComment(){
         when(postRepository.findById(POST_ID)).thenReturn(Optional.of(getPost()));
         when(commentRepository.findById(COMMENT_ID)).thenReturn(Optional.empty());
 
@@ -227,7 +227,7 @@ class CommentServiceImplTest {
 
     @Test
     //Dato de entrada id comentario, dato de salida ApiResponse (True)
-    void deleteComment() {
+    void deleteComment_Success() {
         when(postRepository.findById(POST_ID)).thenReturn(Optional.of(getPost()));
         when(commentRepository.findById(COMMENT_ID)).thenReturn(Optional.of(getCommentEntity()));
 
@@ -238,7 +238,7 @@ class CommentServiceImplTest {
 
     @Test()
     //Dato de entrada id de post que no existe, dato de salida ResourceNotFoundException
-    void deleteCommentExceptionPost(){
+    void deleteComment_NotFound(){
         when(postRepository.findById(POST_ID)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> commentService.deleteComment(POST_ID, COMMENT_ID, getUserPrincipal()),
@@ -247,7 +247,7 @@ class CommentServiceImplTest {
 
     @Test
     //Dato de entrada id de comentario que no existe, dato de salida ResourceNotFoundException
-    void deleteCommentExceptionComment(){
+    void deleteComment_NotFoundComment(){
         when(postRepository.findById(POST_ID)).thenReturn(Optional.of(getPost()));
         when(commentRepository.findById(COMMENT_ID)).thenReturn(Optional.empty());
 
@@ -257,7 +257,7 @@ class CommentServiceImplTest {
 
     @Test
     //Dato de entrada usuario no autorizado, dato de salida BlogapiException
-    void deleteCommentExceptionRole(){
+    void deleteComment_NotPermission(){
         when(postRepository.findById(POST_ID)).thenReturn(Optional.of(getPost()));
         when(commentRepository.findById(COMMENT_ID)).thenReturn(Optional.of(getCommentEntity()));
 
@@ -268,7 +268,7 @@ class CommentServiceImplTest {
 
     @Test
     //Dato de entrada id del post diferente a la id del post del comentario, datos de salida ApiResponse (False)
-    void deleteCommentFalse(){
+    void deleteComment_False(){
         when(postRepository.findById(POST_ID)).thenReturn(Optional.of(getPost()));
         getPost().setId(65983L);
 

@@ -116,7 +116,7 @@ class AlbumControllerTest {
 
     @Test
     @WithUserDetails("user")
-    void addAlbum() throws Exception{
+    void addAlbum_Success() throws Exception{
         when(albumService.addAlbum(albumRequest, user)).thenReturn(album);
 
         mockMvc.perform(
@@ -128,7 +128,7 @@ class AlbumControllerTest {
 
     @Test
     @WithUserDetails("admin")
-    void addAlbumExceptionForbiden() throws Exception{
+    void addAlbum_Forbiden() throws Exception{
         mockMvc.perform(
                 post("/api/albums")
                         .contentType("application/json")
@@ -137,7 +137,7 @@ class AlbumControllerTest {
     }
 
     @Test
-    void getAlbum() throws Exception{
+    void getAlbum_Success() throws Exception{
         when(albumService.getAlbum(95L)).thenReturn(album);
 
         mockMvc.perform(
@@ -149,30 +149,30 @@ class AlbumControllerTest {
 
     @Test
     @WithUserDetails("admin")
-    void updateAlbum() throws Exception{
+    void updateAlbum_Success() throws Exception{
         when(albumService.updateAlbum(5L,albumRequest, user)).thenReturn(albumResponse);
 
         mockMvc.perform(
                 put("/api/albums/{id}",95L)
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(albumResponse)))
+                        .content(objectMapper.writeValueAsString(albumRequest)))
                         .andExpect(status().isCreated());
     }
 
     @Test
-    void updateAlbumUnauthorized() throws Exception{
+    void updateAlbum_Unauthorized() throws Exception{
         when(albumService.updateAlbum(5L,albumRequest, user)).thenReturn(albumResponse);
 
         mockMvc.perform(
                 put("/api/albums/{id}",95L)
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(albumResponse)))
+                        .content(objectMapper.writeValueAsString(albumRequest)))
                         .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithUserDetails("admin")
-    void deleteAlbum() throws Exception{
+    void deleteAlbum_Success() throws Exception{
         ApiResponse apiResponse = new ApiResponse(true, "Se ha borrado el album");
         when(albumService.deleteAlbum(2L, user)).thenReturn(apiResponse);
 
@@ -182,7 +182,7 @@ class AlbumControllerTest {
     }
 
     @Test
-    void deleteAlbumUnauthorized() throws Exception{
+    void deleteAlbum_Unauthorized() throws Exception{
         ApiResponse apiResponse = new ApiResponse(true, "Se ha borrado el album");
         when(albumService.deleteAlbum(2L, user)).thenReturn(apiResponse);
 
@@ -193,7 +193,7 @@ class AlbumControllerTest {
 
 
     @Test
-    void getAllPhotosByAlbum() throws Exception{
+    void getAllPhotosByAlbum_Success() throws Exception{
         PagedResponse<PhotoResponse> response =
                 new PagedResponse(List.of(photoResponse),1,1,1,1, true);
         when(photoService.getAllPhotosByAlbum(95L,1,1)).thenReturn(response);

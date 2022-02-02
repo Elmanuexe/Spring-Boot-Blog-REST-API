@@ -36,7 +36,7 @@ class RoleRepositoryTest {
     }
 
     @Test
-    void findByName() {
+    void findByName_Success() {
         testEntityManager.persist(role);
         assertNotNull(roleRepository.findByName(role.getName()));
         assertEquals(Optional.of(role),roleRepository.findByName(RoleName.ROLE_ADMIN));
