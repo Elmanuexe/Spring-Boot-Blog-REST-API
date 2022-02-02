@@ -4,13 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sopromadze.blogapi.model.Album;
 import com.sopromadze.blogapi.model.Photo;
 import com.sopromadze.blogapi.model.role.RoleName;
+import com.sopromadze.blogapi.payload.AlbumResponse;
+import com.sopromadze.blogapi.payload.ApiResponse;
+import com.sopromadze.blogapi.payload.PagedResponse;
+import com.sopromadze.blogapi.payload.PhotoResponse;
 import com.sopromadze.blogapi.payload.request.AlbumRequest;
 import com.sopromadze.blogapi.security.UserPrincipal;
 import com.sopromadze.blogapi.service.AlbumService;
 import com.sopromadze.blogapi.service.PhotoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,16 +22,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.sopromadze.blogapi.model.user.User;
 
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {SpringSecurityTestWebConfig.class})
 @AutoConfigureMockMvc
 class AlbumControllerTest {
@@ -54,6 +57,8 @@ class AlbumControllerTest {
     private static Album album;
     private static AlbumRequest albumRequest;
     private static UserPrincipal user;
+    private static AlbumResponse albumResponse;
+    private static PhotoResponse photoResponse;
 
     @BeforeEach
     void initTest(){
@@ -87,11 +92,20 @@ class AlbumControllerTest {
         photos.add(photo1);
         photos.add(photo2);
 
+        photoResponse = new PhotoResponse(2L,"Photo", "www.photo.com", "www.img.com", 95L);
+
+
         album = new Album();
         album.setId(95L);
         album.setTitle("Album 1");
         album.setPhoto(photos);
         album.setUser(usuario);
+
+        albumResponse = new AlbumResponse();
+        albumResponse.setId(95L);
+        albumResponse.setTitle("Album 1");
+        albumResponse.setPhoto(photos);
+        albumResponse.setUser(usuario);
 
         albumRequest = new AlbumRequest();
         albumRequest.setId(95L);
@@ -100,50 +114,95 @@ class AlbumControllerTest {
 
     }
 
-   /* @Test
-    @WithUserDetails(value = "admin", userDetailsServiceBeanName = "customUserDetailsServiceImpl")
-    void addAlbum() {
-
+    @Test
+    @WithUserDetails("user")
+    void addAlbum_Success() throws Exception{
         when(albumService.addAlbum(albumRequest, user)).thenReturn(album);
 
-        Album al = albumController.addAlbum(albumRequest, user);
+        mockMvc.perform(
+                post("/api/albums")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(album)))
+                        .andExpect(status().isCreated());
+    }
 
-        assertEquals(album.getId(), al.getId());
+    @Test
+    @WithUserDetails("admin")
+    void addAlbum_Forbiden() throws Exception{
+        mockMvc.perform(
+                post("/api/albums")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(album)))
+                        .andExpect(status().isForbidden());
+    }
 
-    }*/
+    @Test
+    void getAlbum_Success() throws Exception{
+        when(albumService.getAlbum(95L)).thenReturn(album);
 
-    /*@Test
-    @WithUserDetails(value = "admin", userDetailsServiceBeanName = "customUserDetailsServiceImpl")
-    void addAlbumExceptionUnauthorized() {
+        mockMvc.perform(
+                get("/api/albums/{id}", 95L)
+                        .contentType("application/json"))
+                        .andExpect(jsonPath("$.id").value(95L))
+                        .andExpect(status().isOk());
+    }
 
-        when(albumService.addAlbum(albumRequest, user)).thenReturn(album);
+    @Test
+    @WithUserDetails("admin")
+    void updateAlbum_Success() throws Exception{
+        when(albumService.updateAlbum(5L,albumRequest, user)).thenReturn(albumResponse);
 
-        Album al = albumController.addAlbum(albumRequest, user);
+        mockMvc.perform(
+                put("/api/albums/{id}",95L)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(albumRequest)))
+                        .andExpect(status().isCreated());
+    }
 
-        assertEquals(album.getId(), al.getId());
+    @Test
+    void updateAlbum_Unauthorized() throws Exception{
+        when(albumService.updateAlbum(5L,albumRequest, user)).thenReturn(albumResponse);
 
-    }*/
+        mockMvc.perform(
+                put("/api/albums/{id}",95L)
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(albumRequest)))
+                        .andExpect(status().isUnauthorized());
+    }
 
-   /* @Test
-    void addAlbumExceptionUnauthorized_thenReturn401() throws Exception{
+    @Test
+    @WithUserDetails("admin")
+    void deleteAlbum_Success() throws Exception{
+        ApiResponse apiResponse = new ApiResponse(true, "Se ha borrado el album");
+        when(albumService.deleteAlbum(2L, user)).thenReturn(apiResponse);
 
-        mockMvc.perform(post("/api/albums"))
+        mockMvc.perform(
+                delete("/api/albums/{id}", 95L))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteAlbum_Unauthorized() throws Exception{
+        ApiResponse apiResponse = new ApiResponse(true, "Se ha borrado el album");
+        when(albumService.deleteAlbum(2L, user)).thenReturn(apiResponse);
+
+        mockMvc.perform(
+                delete("/api/albums/{id}", 95L))
                 .andExpect(status().isUnauthorized());
-    }*/
-
-    @Test
-    void getAlbum() {
     }
 
-    @Test
-    void updateAlbum() {
-    }
 
     @Test
-    void deleteAlbum() {
-    }
+    void getAllPhotosByAlbum_Success() throws Exception{
+        PagedResponse<PhotoResponse> response =
+                new PagedResponse(List.of(photoResponse),1,1,1,1, true);
+        when(photoService.getAllPhotosByAlbum(95L,1,1)).thenReturn(response);
 
-    @Test
-    void getAllPhotosByAlbum() {
+        mockMvc.perform(
+                get("/api/albums/{id}/photos",95L)
+                        .param("page", "1")
+                        .param("size", "1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id").value(2));
     }
 }

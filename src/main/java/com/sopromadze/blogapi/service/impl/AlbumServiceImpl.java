@@ -41,7 +41,6 @@ public class AlbumServiceImpl implements AlbumService {
 
 	private static final String YOU_DON_T_HAVE_PERMISSION_TO_MAKE_THIS_OPERATION = "You don't have permission to make this operation";
 
-
 	private final AlbumRepository albumRepository;
 
 	private final UserRepository userRepository;
@@ -77,13 +76,15 @@ public class AlbumServiceImpl implements AlbumService {
 
 		album.setUser(user);
 		Album newAlbum = albumRepository.save(album);
+
 		return album;
 	}
 
 	@Override
 	public Album getAlbum(Long id) {
 		Album album = albumRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ALBUM_STR, ID, id));
-		return album;
+
+		return  album;
 	}
 
 	@Override
@@ -106,13 +107,13 @@ public class AlbumServiceImpl implements AlbumService {
 	}
 
 	@Override
-	public ResponseEntity<ApiResponse> deleteAlbum(Long id, UserPrincipal currentUser) {
+	public ApiResponse deleteAlbum(Long id, UserPrincipal currentUser) {
 		Album album = albumRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ALBUM_STR, ID, id));
 		User user = userRepository.getUser(currentUser);
 		if (album.getUser().getId().equals(user.getId()) || currentUser.getAuthorities()
 				.contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
 			albumRepository.deleteById(id);
-			return new ResponseEntity<>(new ApiResponse(Boolean.TRUE, "You successfully deleted album"), HttpStatus.OK);
+			return new ApiResponse(Boolean.TRUE, "You successfully deleted album");
 		}
 
 		throw new BlogapiException(HttpStatus.UNAUTHORIZED, YOU_DON_T_HAVE_PERMISSION_TO_MAKE_THIS_OPERATION);

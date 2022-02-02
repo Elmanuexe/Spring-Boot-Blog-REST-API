@@ -45,36 +45,36 @@ public class AlbumController {
 	}
 
 	@GetMapping
-	public PagedResponse<AlbumResponse> getAllAlbums(
+	public ResponseEntity<PagedResponse<AlbumResponse>> getAllAlbums(
 			@RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
 			@RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
 		AppUtils.validatePageNumberAndSize(page, size);
 
-		return albumService.getAllAlbums(page, size);
+		return ResponseEntity.status(HttpStatus.OK).body(albumService.getAllAlbums(page, size));
 	}
 
 	@PostMapping
 	@PreAuthorize("hasRole('USER')")
-	public Album addAlbum(@Valid @RequestBody AlbumRequest albumRequest, @CurrentUser UserPrincipal currentUser) {
-		return albumService.addAlbum(albumRequest, currentUser);
+	public ResponseEntity<Album> addAlbum(@Valid @RequestBody AlbumRequest albumRequest, @CurrentUser UserPrincipal currentUser) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(albumService.addAlbum(albumRequest, currentUser));
 	}
 
 	@GetMapping("/{id}")
-	public Album getAlbum(@PathVariable(name = "id") Long id) {
-		return albumService.getAlbum(id);
+	public ResponseEntity<Album> getAlbum(@PathVariable(name = "id") Long id) {
+		return ResponseEntity.status(HttpStatus.OK).body(albumService.getAlbum(id));
 	}
 
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public AlbumResponse updateAlbum(@PathVariable(name = "id") Long id, @Valid @RequestBody AlbumRequest newAlbum,
+	public ResponseEntity<AlbumResponse> updateAlbum(@PathVariable(name = "id") Long id, @Valid @RequestBody AlbumRequest newAlbum,
 			@CurrentUser UserPrincipal currentUser) {
-		return albumService.updateAlbum(id, newAlbum, currentUser);
+		return ResponseEntity.status(HttpStatus.CREATED).body(albumService.updateAlbum(id, newAlbum, currentUser));
 	}
 
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<ApiResponse> deleteAlbum(@PathVariable(name = "id") Long id, @CurrentUser UserPrincipal currentUser) {
-		return albumService.deleteAlbum(id, currentUser);
+		return ResponseEntity.status(HttpStatus.OK).body(albumService.deleteAlbum(id, currentUser));
 	}
 
 	@GetMapping("/{id}/photos")

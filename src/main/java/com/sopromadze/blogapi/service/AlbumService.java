@@ -18,7 +18,7 @@ public interface AlbumService {
 
 	AlbumResponse updateAlbum(Long id, AlbumRequest newAlbum, UserPrincipal currentUser);
 
-	ResponseEntity<ApiResponse> deleteAlbum(Long id, UserPrincipal currentUser);
+	ApiResponse deleteAlbum(Long id, UserPrincipal currentUser);
 
 	PagedResponse<Album> getUserAlbums(String username, int page, int size);
 

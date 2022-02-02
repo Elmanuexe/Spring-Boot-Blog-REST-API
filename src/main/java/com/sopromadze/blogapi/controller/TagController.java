@@ -33,45 +33,45 @@ public class TagController {
 	private final TagService tagService;
 
 	@GetMapping
-	public PagedResponse<Tag> getAllTags(
+	public ResponseEntity<PagedResponse<Tag>> getAllTags(
 			@RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
 			@RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
 
 		PagedResponse<Tag> response = tagService.getAllTags(page, size);
 
-		return response;
+		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	@PostMapping
 	@PreAuthorize("hasRole('USER')")
-	public Tag addTag(@Valid @RequestBody Tag tag, @CurrentUser UserPrincipal currentUser) {
+	public ResponseEntity<Tag> addTag(@Valid @RequestBody Tag tag, @CurrentUser UserPrincipal currentUser) {
 		Tag newTag = tagService.addTag(tag, currentUser);
 
-		return newTag;
+		return ResponseEntity.status(HttpStatus.CREATED).body(newTag);
 	}
 
 	@GetMapping("/{id}")
-	public Tag getTag(@PathVariable(name = "id") Long id) {
+	public ResponseEntity<Tag> getTag(@PathVariable(name = "id") Long id) {
 		Tag tag = tagService.getTag(id);
 
-		return tag;
+		return ResponseEntity.status(HttpStatus.OK).body(tag);
 	}
 
 	@PutMapping("/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public Tag updateTag(@PathVariable(name = "id") Long id, @Valid @RequestBody Tag tag, @CurrentUser UserPrincipal currentUser) {
+	public ResponseEntity<Tag> updateTag(@PathVariable(name = "id") Long id, @Valid @RequestBody Tag tag, @CurrentUser UserPrincipal currentUser) {
 
 		Tag updatedTag = tagService.updateTag(id, tag, currentUser);
 
-		return updatedTag;
+		return ResponseEntity.status(HttpStatus.OK).body(updatedTag);
 	}
 
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-	public ApiResponse deleteTag(@PathVariable(name = "id") Long id, @CurrentUser UserPrincipal currentUser) {
+	public ResponseEntity<ApiResponse> deleteTag(@PathVariable(name = "id") Long id, @CurrentUser UserPrincipal currentUser) {
 		ApiResponse apiResponse = tagService.deleteTag(id, currentUser);
 
-		return apiResponse;
+		return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
 	}
 
 }
