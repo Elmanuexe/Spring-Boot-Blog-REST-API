@@ -32,4 +32,35 @@ public class SpringSecurityTestWebConfig {
 
         return new InMemoryUserDetailsManager(List.of(admin,user));
     }
+<<<<<<< HEAD
+
+    /*@Bean("customUserDetailsServiceImpl")
+    @Primary
+    public CustomUserDetailsService customUserDetailsService() {
+        return new CustomUserDetailsService() {
+
+            UserPrincipal admin = new UserPrincipal(125L,"admin", "admin","admin","admin@gmail.com", "563", Collections.singleton(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString())));
+
+            UserPrincipal user = new UserPrincipal(123L,"user", "user","user","user@gmail.com", "123", Collections.singleton(new SimpleGrantedAuthority(RoleName.ROLE_USER.toString())));
+
+            UserDetailsService uds = new InMemoryUserDetailsManager(List.of(admin,user));
+
+
+            @Override
+            public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+                return uds.loadUserByUsername(usernameOrEmail);
+            }
+
+            @Override
+            public UserDetails loadUserById(Long id) {
+                switch (id.intValue()) {
+                    case 125: return admin;
+                    case 123: return user;
+                    default: throw new UsernameNotFoundException("Usuario no encontrado");
+                }
+            }
+        };
+    }*/
+=======
+>>>>>>> origin/master
 }
