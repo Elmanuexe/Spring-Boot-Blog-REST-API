@@ -60,7 +60,7 @@ class PhotoRepositoryTest {
         al.setCreatedAt(Instant.now());
     }
     @Test
-    void findByAlbumId() {
+    void findByAlbumId_Success() {
         testEntityManager.persist(al);
         assertNotNull(photoRepository.findByAlbumId(al.getId(), PageRequest.of(1, 1, Sort.Direction.DESC,"createdAt")));
     }

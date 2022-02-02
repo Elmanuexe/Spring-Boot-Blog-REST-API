@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
@@ -71,12 +72,12 @@ class PostControllerTest {
 
         postRequest = new PostRequest();
         postRequest.setCategoryId(2L);
-        postRequest.setBody("BodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBody");
+        postRequest.setBody("BodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBody");
         postRequest.setTitle("PostPostPostPost");
 
         postResponse = new PostResponse();
         postResponse.setCategory("Categoria1");
-        postResponse.setBody("BodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBody");
+        postResponse.setBody("BodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBodyBody");
         postResponse.setTitle("PostPostPostPost");
 
         tag = new Tag();
@@ -87,12 +88,14 @@ class PostControllerTest {
         post.setId(1L);
         post.setCategory(category);
         post.setTags(List.of(tag));
+        post.setCreatedAt(Instant.now());
+        post.setUpdatedAt(Instant.now());
 
         pagedResponse = new PagedResponse(List.of(post),1,1,1,1,true);
     }
 
     @Test
-    void getAllPosts() throws Exception{
+    void getAllPosts_Success() throws Exception{
 
         when(postService.getAllPosts(1,1)).thenReturn(pagedResponse);
 
@@ -105,7 +108,7 @@ class PostControllerTest {
     }
 
     @Test
-    void getPostsByCategory() throws Exception{
+    void getPostsByCategory_Success() throws Exception{
         when(postService.getPostsByCategory(2L,1,1)).thenReturn(pagedResponse);
 
         mockMvc.perform(
@@ -117,7 +120,7 @@ class PostControllerTest {
     }
 
     @Test
-    void getPostsByTag() throws Exception{
+    void getPostsByTag_Success() throws Exception{
         when(postService.getPostsByTag(3L,1,1)).thenReturn(pagedResponse);
 
         mockMvc.perform(
@@ -130,18 +133,19 @@ class PostControllerTest {
 
     @Test
     @WithUserDetails("user")
-    void addPost() throws Exception{
+    void addPost_Success() throws Exception{
         when(postService.addPost(postRequest,userPrincipal)).thenReturn(postResponse);
 
         mockMvc.perform(
                 post("/api/posts")
                         .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(postResponse)))
+                        //.content(objectMapper.writeValueAsString(postResponse)))
+                        .content(objectMapper.writeValueAsString(postRequest)))
                 .andExpect(status().isCreated());
     }
 
     @Test
-    void addPostUnauthorized() throws Exception{
+    void addPost_Unauthorized() throws Exception{
         mockMvc.perform(
                 post("/api/posts")
                         .contentType("application/json")
@@ -150,7 +154,7 @@ class PostControllerTest {
     }
 
     @Test
-    void getPost() throws Exception {
+    void getPost_Success() throws Exception {
         when(postService.getPost(1L)).thenReturn(post);
 
         mockMvc.perform(
@@ -162,7 +166,7 @@ class PostControllerTest {
 
     @Test
     @WithUserDetails("admin")
-    void updatePost() throws Exception {
+    void updatePost_Success() throws Exception {
         when(postService.updatePost(1L,postRequest,userPrincipal)).thenReturn(post);
 
         mockMvc.perform(
@@ -173,7 +177,7 @@ class PostControllerTest {
     }
 
     @Test
-    void updatePostUnauthorized() throws Exception {
+    void updatePost_Unauthorized() throws Exception {
         mockMvc.perform(
                         put("/api/albums/{id}",1L)
                                 .contentType("application/json")
@@ -183,7 +187,7 @@ class PostControllerTest {
 
     @Test
     @WithUserDetails("admin")
-    void deletePost() throws Exception {
+    void deletePost_Success() throws Exception {
         when(postService.deletePost(1L, userPrincipal)).thenReturn(apiResponse);
 
         mockMvc.perform(delete("/api/albums/{id}",1L)                       )
@@ -191,7 +195,7 @@ class PostControllerTest {
     }
 
     @Test
-    void deletePostUnauthorized() throws Exception {
+    void deletePost_Unauthorized() throws Exception {
         mockMvc.perform(delete("/api/albums/{id}",1L)                       )
                 .andExpect(status().isUnauthorized());
     }
