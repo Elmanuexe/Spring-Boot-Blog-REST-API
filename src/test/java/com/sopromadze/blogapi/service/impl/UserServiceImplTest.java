@@ -94,14 +94,14 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada Id usuario, dato de salida Usuario Logeado
-    void getCurrentUser() {
+    void getCurrentUser_Success() {
         UserSummary userSummary = userService.getCurrentUser(userPrincipal);
         assertEquals(userPrincipal.getId(), userSummary.getId(), "Este método te devuelve el usuario logeado");
     }
 
     @Test
     //Dato de entrada Nombre de Usuario sin registrar,  dato de salida un true ya que no se encuentra el nombre registrado
-    void checkUsernameAvailability() {
+    void checkUsernameAvailability_Success() {
         when(userRepository.existsByUsername(userPrincipal.getUsername())).thenReturn(false);
 
         UserIdentityAvailability userIdentityAvailability = userService.checkUsernameAvailability(userPrincipal.getUsername());
@@ -111,7 +111,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada un Email, dato de salida un true porque no se encuentra registrado
-    void checkEmailAvailability() {
+    void checkEmailAvailability_Success() {
         when(userRepository.existsByEmail(userPrincipal.getEmail())).thenReturn(false);
 
         UserIdentityAvailability userIdentityAvailability = userService.checkUsernameAvailability(userPrincipal.getEmail());
@@ -121,7 +121,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada el Id, dato de salida el perfil de usuario del Id
-    void getUserProfile() {
+    void getUserProfile_Success() {
         when(userRepository.getUserByName(user.getUsername())).thenReturn(user);
         when(postRepository.countByCreatedBy(user.getId())).thenReturn(user.getId());
 
@@ -131,7 +131,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada un usuario, dato de salida el usuario registrado
-    void addUser() {
+    void addUser_Success() {
         when(userRepository.existsByUsername(user.getUsername())).thenReturn(false);
         when(userRepository.existsByEmail(user.getEmail())).thenReturn(false);
         when(roleRepository.findByName(RoleName.ROLE_USER)).thenReturn(Optional.of(role));
@@ -143,7 +143,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada un nombre registrado, dato de salida BadRequest
-    void addUserExceptionUserName(){
+    void addUser_BadRequest(){
         when(userRepository.existsByUsername(user.getUsername())).thenReturn(true);
 
         assertThrows(BadRequestException.class, ()-> userService.addUser(user),
@@ -152,7 +152,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada email ya registrado, dato de salida BadRequest
-    void addUserExceptionEmail(){
+    void addUser_BadRequestEmail(){
         when(userRepository.existsByUsername(user.getUsername())).thenReturn(false);
         when(userRepository.existsByEmail(user.getEmail())).thenReturn(true);
 
@@ -162,7 +162,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada usuario sin rol, dato de salida AppException
-    void addUserExceptionRole(){
+    void addUser_AppException(){
         when(userRepository.existsByUsername(user.getUsername())).thenReturn(false);
         when(userRepository.existsByEmail(user.getEmail())).thenReturn(false);
         when(roleRepository.findByName(RoleName.ROLE_USER)).thenReturn(Optional.empty());
@@ -173,7 +173,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada usuario, dato de salida usuario actualizado
-    void updateUser() {
+    void updateUser_Success() {
         when(userRepository.getUserByName(user.getUsername())).thenReturn(user);
         when(userRepository.save(user)).thenReturn(user);
 
@@ -183,7 +183,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada usuario sin role de admin, dato de salida UnauthorizedException
-    void updateUserExceptionUser(){
+    void updateUser_Unauthorized(){
         when(userRepository.getUserByName(user.getUsername())).thenReturn(user);
 
         assertThrows(UnauthorizedException.class, ()-> userService.updateUser(user, user.getUsername(), userPrincipalUser),
@@ -192,7 +192,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada usuario, dato de salida ApiResponse (True)
-    void deleteUser() {
+    void deleteUser_Success() {
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
 
         ApiResponse apiResponse = userService.deleteUser(user.getUsername(), userPrincipal);
@@ -202,7 +202,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada nulo, dato de salida ResourceNotFoundException
-    void deleteUserExceptionUser(){
+    void deleteUser_NotFound(){
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, ()-> userService.deleteUser(user.getUsername(), userPrincipal),
@@ -211,7 +211,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada user sin role de ADMIN, dato de salida AccessDeniedException
-    void deleteUserExceptionAccesDenied(){
+    void deleteUser_AccesDenied(){
         when(userRepository.findByUsername(user.getUsername())).thenReturn(Optional.of(user));
         user.setId(548L);
 
@@ -221,7 +221,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada usuario, dato de salida usuario con role de ADMIN
-    void giveAdmin() {
+    void giveAdmin_Success() {
         when(userRepository.getUserByName(user.getUsername())).thenReturn(user);
         when(roleRepository.findByName(role.getName())).thenReturn(Optional.of(role));
         when(roleRepository.findByName(role2.getName())).thenReturn(Optional.of(role2));
@@ -234,7 +234,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada Usuario sin role de Admin, dato de salida AppException
-    void giveAdminExceptionAdminRole(){
+    void giveAdmin_AppException(){
         when(userRepository.getUserByName(user.getUsername())).thenReturn(user);
         when(roleRepository.findByName(role.getName())).thenReturn(Optional.empty());
 
@@ -244,7 +244,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada Usuario con role de Admin pero sin role de usuario, dato de salida AppException
-    void giveAdminExceptionUserRole(){
+    void giveAdmin_AppExceptionRole(){
         when(userRepository.getUserByName(user.getUsername())).thenReturn(user);
         when(roleRepository.findByName(role.getName())).thenReturn(Optional.of(role2));
         when(roleRepository.findByName(role.getName())).thenReturn(Optional.empty());
@@ -255,7 +255,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada usuario con role de admin, dato de salida usuario sin role de admin
-    void removeAdmin() {
+    void removeAdmin_Success() {
         user.setRoles(List.of(role2));
         when(userRepository.getUserByName(user.getUsername())).thenReturn(user);
         when(roleRepository.findByName(role.getName())).thenReturn(Optional.of(role));
@@ -268,7 +268,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada usuario sin role, dato de salida AppException
-    void removeAdminExceptionUserRole(){
+    void removeAdmin_AppException(){
         when(userRepository.getUserByName(user.getUsername())).thenReturn(user);
         when(roleRepository.findByName(role.getName())).thenReturn(Optional.empty());
 
@@ -278,7 +278,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada datos de usuario, datos de salida datos de usuario actualizados
-    void setOrUpdateInfo() {
+    void setOrUpdateInfo_Success() {
         when(userRepository.findByUsername(userPrincipal.getUsername())).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
         when(postRepository.countByCreatedBy(user.getId())).thenReturn(1L);
@@ -289,7 +289,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada usuario no existente, dato de salida ResourceNotFoundException
-    void setOrUpdateInfoExceptionUser(){
+    void setOrUpdateInfo_NotFound(){
         when(userRepository.findByUsername(userPrincipal.getUsername())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, ()-> userService.setOrUpdateInfo(userPrincipal, infoRequest),
@@ -298,7 +298,7 @@ class UserServiceImplTest {
 
     @Test
     //Dato de entrada usuario sin role de admin, dato de salida AccessDeniedException
-    void setOrUpdateInfoAccessDenied(){
+    void setOrUpdateInfo_AccessDenied(){
         when(userRepository.findByUsername(userPrincipalUser.getUsername())).thenReturn(Optional.of(user));
 
         assertThrows(AccessDeniedException.class, ()-> userService.setOrUpdateInfo(userPrincipalUser, infoRequest),
