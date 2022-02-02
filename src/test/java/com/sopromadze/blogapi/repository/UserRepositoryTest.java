@@ -6,6 +6,7 @@ import com.sopromadze.blogapi.model.user.User;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.sopromadze.blogapi.security.UserPrincipal;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ class UserRepositoryTest {
 
 
     @Test
-    void findByUserNameTest(){
+    void findByUserNameSuccess(){
         User user= new User("Luismi","Lopez","Ligre","luismilopezmagaña@salesianos.edu","12345678");
         user.setCreatedAt(Instant.now());
         user.setUpdatedAt(Instant.now());
@@ -42,7 +43,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void findByEmailTest(){
+    void findByEmail_Success(){
         User user= new User("Luismi","Lopez","Ligre","luismilopezmagaña@salesianos.edu","12345678");
         user.setCreatedAt(Instant.now());
         user.setUpdatedAt(Instant.now());
@@ -51,7 +52,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void existByUserNameTest(){
+    void existByUserName_Success(){
         User user= new User("Luismi","Lopez","Ligre","luismilopezmagaña@salesianos.edu","12345678");
         user.setCreatedAt(Instant.now());
         user.setUpdatedAt(Instant.now());
@@ -60,7 +61,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void existByEmailTest(){
+    void existByEmail_Success(){
         User user= new User("Luismi","Lopez","Ligre","luismilopezmagaña@salesianos.edu","12345678");
         user.setCreatedAt(Instant.now());
         user.setUpdatedAt(Instant.now());
@@ -69,7 +70,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void findByUsernameOrEmailTest(){
+    void findByUsernameOrEmail_Success(){
         User user= new User("Luismi","Lopez","Ligre","luismilopezmagaña@salesianos.edu","12345678");
         user.setCreatedAt(Instant.now());
         user.setUpdatedAt(Instant.now());
@@ -95,7 +96,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    void getUserTest (){
+    void getUserSuccess (){
         UserPrincipal userPrincipal= new UserPrincipal(1L, "Luismi","Lopez", "Ligre","luismilopezmagaña@salesianos.edu","12345678", Collections.singleton(new SimpleGrantedAuthority(RoleName.ROLE_USER.toString())));
         User user= new User("Luismi","Lopez","Ligre","luismilopezmagaña@salesianos.edu","12345678");
         user.setCreatedAt(Instant.now());
